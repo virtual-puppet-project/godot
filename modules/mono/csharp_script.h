@@ -103,6 +103,7 @@ class CSharpScript : public Script {
 	};
 
 	Vector<EventSignalInfo> event_signals;
+	Map<StringName, MethodInfo> methods;
 
 #ifdef TOOLS_ENABLED
 	List<PropertyInfo> exported_members_cache; // members_cache
