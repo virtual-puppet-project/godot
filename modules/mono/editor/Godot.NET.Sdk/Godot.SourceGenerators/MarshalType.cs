@@ -50,7 +50,6 @@ namespace Godot.SourceGenerators
         Vector3Array,
         ColorArray,
         GodotObjectOrDerivedArray,
-        SystemObjectArray,
         SystemArrayOfSupportedType,
 
         // Generics
@@ -63,7 +62,7 @@ namespace Godot.SourceGenerators
         GenericIEnumerable,
 
         // Variant
-        SystemObject,
+        Variant,
 
         // Classes
         GodotObjectOrDerived,

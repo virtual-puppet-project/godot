@@ -537,6 +537,10 @@ GD_PINVOKE_EXPORT godot_variant godotsharp_method_bind_call(godot_method_bind *p
 
 // variant.h
 
+GD_PINVOKE_EXPORT void godotsharp_variant_new_copy(godot_variant *r_dest, const godot_variant *p_src) {
+	godot_variant_new_copy(r_dest, p_src);
+}
+
 GD_PINVOKE_EXPORT void godotsharp_variant_new_string_name(godot_variant *r_dest, const godot_string_name *p_s) {
 	godot_variant_new_string_name(r_dest, p_s);
 }
@@ -1180,7 +1184,7 @@ void godotsharp_object_to_string(Object *p_ptr, godot_string *r_str) {
 #endif
 
 // We need this to prevent the functions from being stripped.
-void *godotsharp_pinvoke_funcs[177] = {
+void *godotsharp_pinvoke_funcs[178] = {
 	(void *)godotsharp_method_bind_get_method,
 	(void *)godotsharp_get_class_constructor,
 	(void *)godotsharp_engine_get_singleton,
@@ -1224,6 +1228,7 @@ void *godotsharp_pinvoke_funcs[177] = {
 	(void *)godotsharp_callable_call_deferred,
 	(void *)godotsharp_method_bind_ptrcall,
 	(void *)godotsharp_method_bind_call,
+	(void *)godotsharp_variant_new_copy,
 	(void *)godotsharp_variant_new_string_name,
 	(void *)godotsharp_variant_new_node_path,
 	(void *)godotsharp_variant_new_object,

@@ -4,6 +4,7 @@ using System.Collections;
 using Godot.NativeInterop;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Godot.Collections
 {
@@ -796,5 +797,8 @@ namespace Godot.Collections
         /// </summary>
         /// <returns>A string representation of this dictionary.</returns>
         public override string ToString() => _underlyingDict.ToString();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator Variant(Dictionary<TKey, TValue> from) => Variant.From(from);
     }
 }

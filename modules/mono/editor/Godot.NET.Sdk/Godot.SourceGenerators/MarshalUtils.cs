@@ -83,7 +83,6 @@ namespace Godot.SourceGenerators
                 MarshalType.Vector3Array => VariantType.PackedVector3Array,
                 MarshalType.ColorArray => VariantType.PackedColorArray,
                 MarshalType.GodotObjectOrDerivedArray => VariantType.Array,
-                MarshalType.SystemObjectArray => VariantType.Array,
                 MarshalType.SystemArrayOfSupportedType => VariantType.Array,
                 MarshalType.GodotGenericDictionary => VariantType.Dictionary,
                 MarshalType.GodotGenericArray => VariantType.Array,
@@ -92,7 +91,7 @@ namespace Godot.SourceGenerators
                 MarshalType.GenericIDictionary => VariantType.Dictionary,
                 MarshalType.GenericICollection => VariantType.Array,
                 MarshalType.GenericIEnumerable => VariantType.Array,
-                MarshalType.SystemObject => VariantType.Nil,
+                MarshalType.Variant => VariantType.Nil,
                 MarshalType.GodotObjectOrDerived => VariantType.Object,
                 MarshalType.StringName => VariantType.StringName,
                 MarshalType.NodePath => VariantType.NodePath,
@@ -137,8 +136,6 @@ namespace Godot.SourceGenerators
                     return MarshalType.Double;
                 case SpecialType.System_String:
                     return MarshalType.String;
-                case SpecialType.System_Object:
-                    return MarshalType.SystemObject;
                 default:
                 {
                     var typeKind = type.TypeKind;
@@ -169,6 +166,7 @@ namespace Godot.SourceGenerators
                                 { Name: "RID" } => MarshalType.RID,
                                 { Name: "Callable" } => MarshalType.Callable,
                                 { Name: "SignalInfo" } => MarshalType.SignalInfo,
+                                { Name: "Variant" } => MarshalType.Variant,
                                 _ => null
                             };
                         }
@@ -192,8 +190,6 @@ namespace Godot.SourceGenerators
                                 return MarshalType.Float64Array;
                             case SpecialType.System_String:
                                 return MarshalType.StringArray;
-                            case SpecialType.System_Object:
-                                return MarshalType.SystemObjectArray;
                         }
 
                         if (elementType.SimpleDerivesFrom(typeCache.GodotObjectType))
@@ -317,6 +313,9 @@ namespace Godot.SourceGenerators
             return null;
         }
 
+        private static StringBuilder Append(this StringBuilder source, string a, string b)
+            => source.Append(a).Append(b);
+
         private static StringBuilder Append(this StringBuilder source, string a, string b, string c)
             => source.Append(a).Append(b).Append(c);
 
@@ -340,7 +339,6 @@ namespace Godot.SourceGenerators
             string c, string d, string e, string f, string g, string h)
             => source.Append(a).Append(b).Append(c).Append(d).Append(e).Append(f).Append(g).Append(h);
 
-        private const string Marshaling = "global::Godot.NativeInterop.Marshaling";
         private const string VariantUtils = "global::Godot.NativeInterop.VariantUtils";
 
         public static StringBuilder AppendVariantToManagedExpr(this StringBuilder source,
@@ -428,8 +426,6 @@ namespace Godot.SourceGenerators
                 MarshalType.GodotObjectOrDerivedArray =>
                     source.Append(VariantUtils, ".ConvertToSystemArrayOfGodotObject<",
                         ((IArrayTypeSymbol)typeSymbol).ElementType.FullQualifiedName(), ">(", inputExpr, ")"),
-                MarshalType.SystemObjectArray =>
-                    source.Append(VariantUtils, ".ConvertToSystemArrayOfVariant(", inputExpr, ")"),
                 MarshalType.SystemArrayOfSupportedType =>
                     source.Append(VariantUtils, ".ConvertToSystemArrayOfSupportedType<",
                         ((IArrayTypeSymbol)typeSymbol).ElementType.FullQualifiedName(), ">(", inputExpr, ")"),
@@ -454,8 +450,8 @@ namespace Godot.SourceGenerators
                 MarshalType.GenericICollection or MarshalType.GenericIEnumerable =>
                     source.Append(VariantUtils, ".ConvertToGenericArrayObject<",
                         ((INamedTypeSymbol)typeSymbol).TypeArguments[0].FullQualifiedName(), ">(", inputExpr, ")"),
-                MarshalType.SystemObject =>
-                    source.Append(Marshaling, ".ConvertVariantToManagedObject(", inputExpr, ")"),
+                MarshalType.Variant =>
+                    source.Append("global::Godot.Variant.CreateCopyingBorrowed(", inputExpr, ")"),
                 MarshalType.GodotObjectOrDerived =>
                     source.Append("(", typeSymbol.FullQualifiedName(),
                         ")", VariantUtils, ".ConvertToGodotObject(", inputExpr, ")"),
@@ -561,8 +557,6 @@ namespace Godot.SourceGenerators
                     source.Append(VariantUtils, ".CreateFromPackedColorArray(", inputExpr, ")"),
                 MarshalType.GodotObjectOrDerivedArray =>
                     source.Append(VariantUtils, ".CreateFromSystemArrayOfGodotObject(", inputExpr, ")"),
-                MarshalType.SystemObjectArray =>
-                    source.Append(VariantUtils, ".CreateFromSystemArrayOfVariant(", inputExpr, ")"),
                 MarshalType.SystemArrayOfSupportedType =>
                     source.Append(VariantUtils, ".CreateFromSystemArrayOfSupportedType(", inputExpr, ")"),
                 MarshalType.GodotGenericDictionary =>
@@ -579,8 +573,8 @@ namespace Godot.SourceGenerators
                     source.Append(VariantUtils, ".CreateFromSystemGenericICollection(", inputExpr, ")"),
                 MarshalType.GenericIEnumerable =>
                     source.Append(VariantUtils, ".CreateFromSystemGenericIEnumerable(", inputExpr, ")"),
-                MarshalType.SystemObject =>
-                    source.Append(Marshaling, ".ConvertManagedObjectToVariant(", inputExpr, ")"),
+                MarshalType.Variant =>
+                    source.Append(inputExpr, ".CopyNativeVariant()"),
                 MarshalType.GodotObjectOrDerived =>
                     source.Append(VariantUtils, ".CreateFromGodotObject(", inputExpr, ")"),
                 MarshalType.StringName =>
