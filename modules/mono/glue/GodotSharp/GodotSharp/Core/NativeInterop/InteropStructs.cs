@@ -35,6 +35,10 @@ namespace Godot.NativeInterop
     // ReSharper disable once InconsistentNaming
     public ref struct godot_ref
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal readonly unsafe godot_ref* GetUnsafeAddress()
+            => (godot_ref*)Unsafe.AsPointer(ref Unsafe.AsRef(in _reference));
+
         private IntPtr _reference;
 
         public void Dispose()
@@ -73,6 +77,10 @@ namespace Godot.NativeInterop
     // ReSharper disable once InconsistentNaming
     public ref struct godot_variant_call_error
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal readonly unsafe godot_variant_call_error* GetUnsafeAddress()
+            => (godot_variant_call_error*)Unsafe.AsPointer(ref Unsafe.AsRef(in error));
+
         private godot_variant_call_error_error error;
         private int argument;
         private Godot.Variant.Type expected;
@@ -100,6 +108,10 @@ namespace Godot.NativeInterop
     // ReSharper disable once InconsistentNaming
     public ref struct godot_variant
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal readonly unsafe godot_variant* GetUnsafeAddress()
+            => (godot_variant*)Unsafe.AsPointer(ref Unsafe.AsRef(in _type));
+
         [FieldOffset(0)] private Godot.Variant.Type _type;
 
         // There's padding here
@@ -143,7 +155,7 @@ namespace Godot.NativeInterop
             // ReSharper disable once InconsistentNaming
             public struct godot_variant_obj_data
             {
-                public UInt64 id;
+                public ulong id;
                 public IntPtr obj;
             }
 
@@ -408,6 +420,10 @@ namespace Godot.NativeInterop
     // ReSharper disable once InconsistentNaming
     public ref struct godot_string
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal readonly unsafe godot_string* GetUnsafeAddress()
+            => (godot_string*)Unsafe.AsPointer(ref Unsafe.AsRef(in _ptr));
+
         private IntPtr _ptr;
 
         public void Dispose()
@@ -436,6 +452,10 @@ namespace Godot.NativeInterop
     // ReSharper disable once InconsistentNaming
     public ref struct godot_string_name
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal readonly unsafe godot_string_name* GetUnsafeAddress()
+            => (godot_string_name*)Unsafe.AsPointer(ref Unsafe.AsRef(in _data));
+
         private IntPtr _data;
 
         public void Dispose()
@@ -505,6 +525,10 @@ namespace Godot.NativeInterop
     // ReSharper disable once InconsistentNaming
     public ref struct godot_node_path
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal readonly unsafe godot_node_path* GetUnsafeAddress()
+            => (godot_node_path*)Unsafe.AsPointer(ref Unsafe.AsRef(in _data));
+
         private IntPtr _data;
 
         public void Dispose()
@@ -549,13 +573,19 @@ namespace Godot.NativeInterop
     // ReSharper disable once InconsistentNaming
     public ref struct godot_signal
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal readonly unsafe godot_signal* GetUnsafeAddress()
+            => (godot_signal*)Unsafe.AsPointer(ref Unsafe.AsRef(in _getUnsafeAddressHelper));
+
+        [FieldOffset(0)] private byte _getUnsafeAddressHelper;
+
         [FieldOffset(0)] private godot_string_name _name;
 
         // There's padding here on 32-bit
 
-        [FieldOffset(8)] private UInt64 _objectId;
+        [FieldOffset(8)] private ulong _objectId;
 
-        public godot_signal(godot_string_name name, ulong objectId)
+        public godot_signal(godot_string_name name, ulong objectId) : this()
         {
             _name = name;
             _objectId = objectId;
@@ -567,7 +597,7 @@ namespace Godot.NativeInterop
             get => _name;
         }
 
-        public UInt64 ObjectId
+        public ulong ObjectId
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => _objectId;
@@ -586,12 +616,18 @@ namespace Godot.NativeInterop
     // ReSharper disable once InconsistentNaming
     public ref struct godot_callable
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal readonly unsafe godot_callable* GetUnsafeAddress()
+            => (godot_callable*)Unsafe.AsPointer(ref Unsafe.AsRef(in _getUnsafeAddressHelper));
+
+        [FieldOffset(0)] private byte _getUnsafeAddressHelper;
+
         [FieldOffset(0)] private godot_string_name _method;
 
         // There's padding here on 32-bit
 
         // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
-        [FieldOffset(8)] private UInt64 _objectId;
+        [FieldOffset(8)] private ulong _objectId;
         [FieldOffset(8)] private IntPtr _custom;
 
         public godot_callable(godot_string_name method, ulong objectId) : this()
@@ -614,11 +650,17 @@ namespace Godot.NativeInterop
     // A correctly constructed value needs to call the native default constructor to allocate `_p`.
     // Don't pass a C# default constructed `godot_array` to native code, unless it's going to
     // be re-assigned a new value (the copy constructor checks if `_p` is null so that's fine).
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Explicit)]
     // ReSharper disable once InconsistentNaming
     public ref struct godot_array
     {
-        private unsafe ArrayPrivate* _p;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal readonly unsafe godot_array* GetUnsafeAddress()
+            => (godot_array*)Unsafe.AsPointer(ref Unsafe.AsRef(in _getUnsafeAddressHelper));
+
+        [FieldOffset(0)] private byte _getUnsafeAddressHelper;
+
+        [FieldOffset(0)] private unsafe ArrayPrivate* _p;
 
         [StructLayout(LayoutKind.Sequential)]
         private struct ArrayPrivate
@@ -699,6 +741,10 @@ namespace Godot.NativeInterop
     // ReSharper disable once InconsistentNaming
     public ref struct godot_dictionary
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal readonly unsafe godot_dictionary* GetUnsafeAddress()
+            => (godot_dictionary*)Unsafe.AsPointer(ref Unsafe.AsRef(in _p));
+
         private IntPtr _p;
 
         public readonly bool IsAllocated
@@ -736,6 +782,10 @@ namespace Godot.NativeInterop
     // ReSharper disable once InconsistentNaming
     public ref struct godot_packed_byte_array
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal readonly unsafe godot_packed_byte_array* GetUnsafeAddress()
+            => (godot_packed_byte_array*)Unsafe.AsPointer(ref Unsafe.AsRef(in _writeProxy));
+
         private IntPtr _writeProxy;
         private unsafe byte* _ptr;
 
@@ -764,6 +814,10 @@ namespace Godot.NativeInterop
     // ReSharper disable once InconsistentNaming
     public ref struct godot_packed_int32_array
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal readonly unsafe godot_packed_int32_array* GetUnsafeAddress()
+            => (godot_packed_int32_array*)Unsafe.AsPointer(ref Unsafe.AsRef(in _writeProxy));
+
         private IntPtr _writeProxy;
         private unsafe int* _ptr;
 
@@ -792,6 +846,10 @@ namespace Godot.NativeInterop
     // ReSharper disable once InconsistentNaming
     public ref struct godot_packed_int64_array
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal readonly unsafe godot_packed_int64_array* GetUnsafeAddress()
+            => (godot_packed_int64_array*)Unsafe.AsPointer(ref Unsafe.AsRef(in _writeProxy));
+
         private IntPtr _writeProxy;
         private unsafe long* _ptr;
 
@@ -820,6 +878,10 @@ namespace Godot.NativeInterop
     // ReSharper disable once InconsistentNaming
     public ref struct godot_packed_float32_array
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal readonly unsafe godot_packed_float32_array* GetUnsafeAddress()
+            => (godot_packed_float32_array*)Unsafe.AsPointer(ref Unsafe.AsRef(in _writeProxy));
+
         private IntPtr _writeProxy;
         private unsafe float* _ptr;
 
@@ -848,6 +910,10 @@ namespace Godot.NativeInterop
     // ReSharper disable once InconsistentNaming
     public ref struct godot_packed_float64_array
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal readonly unsafe godot_packed_float64_array* GetUnsafeAddress()
+            => (godot_packed_float64_array*)Unsafe.AsPointer(ref Unsafe.AsRef(in _writeProxy));
+
         private IntPtr _writeProxy;
         private unsafe double* _ptr;
 
@@ -876,6 +942,10 @@ namespace Godot.NativeInterop
     // ReSharper disable once InconsistentNaming
     public ref struct godot_packed_string_array
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal readonly unsafe godot_packed_string_array* GetUnsafeAddress()
+            => (godot_packed_string_array*)Unsafe.AsPointer(ref Unsafe.AsRef(in _writeProxy));
+
         private IntPtr _writeProxy;
         private unsafe godot_string* _ptr;
 
@@ -904,6 +974,10 @@ namespace Godot.NativeInterop
     // ReSharper disable once InconsistentNaming
     public ref struct godot_packed_vector2_array
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal readonly unsafe godot_packed_vector2_array* GetUnsafeAddress()
+            => (godot_packed_vector2_array*)Unsafe.AsPointer(ref Unsafe.AsRef(in _writeProxy));
+
         private IntPtr _writeProxy;
         private unsafe Vector2* _ptr;
 
@@ -932,6 +1006,10 @@ namespace Godot.NativeInterop
     // ReSharper disable once InconsistentNaming
     public ref struct godot_packed_vector3_array
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal readonly unsafe godot_packed_vector3_array* GetUnsafeAddress()
+            => (godot_packed_vector3_array*)Unsafe.AsPointer(ref Unsafe.AsRef(in _writeProxy));
+
         private IntPtr _writeProxy;
         private unsafe Vector3* _ptr;
 
@@ -960,6 +1038,10 @@ namespace Godot.NativeInterop
     // ReSharper disable once InconsistentNaming
     public ref struct godot_packed_color_array
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal readonly unsafe godot_packed_color_array* GetUnsafeAddress()
+            => (godot_packed_color_array*)Unsafe.AsPointer(ref Unsafe.AsRef(in _writeProxy));
+
         private IntPtr _writeProxy;
         private unsafe Color* _ptr;
 
