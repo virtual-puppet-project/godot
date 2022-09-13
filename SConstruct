@@ -71,10 +71,9 @@ elif os.name == "nt" and methods.get_cmdline_bool("use_mingw", False):
 # want to have to pull in manually.
 # Then we prepend PATH to make it take precedence, while preserving SCons' own entries.
 env_base = Environment(tools=custom_tools)
-env_base.PrependENVPath("PATH", os.getenv("PATH"))
-env_base.PrependENVPath("PKG_CONFIG_PATH", os.getenv("PKG_CONFIG_PATH"))
-if "TERM" in os.environ:  # Used for colored output.
-    env_base["ENV"]["TERM"] = os.environ["TERM"]
+for k in ("TERM", "PATH", "PKG_CONFIG_PATH"):
+    if (k in os.environ):
+        env_base["ENV"][k] = os.environ[k]
 
 env_base.disabled_modules = []
 env_base.use_ptrcall = False
